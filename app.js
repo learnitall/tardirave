@@ -4,7 +4,9 @@
 // P.S. Opal is a cutie
 
 var width = 800;
+var widthRange = function() {return Phaser.Math.Between(0, width);}
 var height = 600;
+var heightRange = function() {return Phaser.Math.Between(0, height);}
 var background_color = "0xe6ffe6";
 
 var tardigrade_scale = 0.5;  // scale of tardigrade image
@@ -12,6 +14,7 @@ var cross_scale = 0.3;  // scale of cross image
 var food_scale = 0.2;  // scale of food image
 var amoeba_scale = 0.2; // scale of amoeba
 var nematode_scale = 0.2;  // scale of nematode
+var level_scale = (3 / 4)  // scalar to reduce scales as level up
 
 var accel_factor = 1.5;  // scalar on player accel
 var playerBounce = 0.5;  // bounce factor on world bounds
@@ -52,6 +55,8 @@ function preload()
     this.load.image('food', 'assets/leaf.svg');
     this.load.image('amoeba', 'assets/blob.svg');
     this.load.image('cross', 'assets/cross.svg');
+
+    enemy_images = ['amoeba', 'nematode'];
 }
 
 function create()
@@ -77,13 +82,12 @@ function create()
     // Setup food
     foodies = this.physics.add.group();
     this.physics.add.overlap(player, foodies, collectFood, null, this);
-    createFood(foodies, targetX, targetY / 2);
 
     // Setup enemies
     enemies = this.physics.add.group()
     this.physics.add.collider(player, enemies, hitEnemy, null, this);
-    createEnemy(enemies, targetX / 2, targetY / 2, 'amoeba');
 
+    startLevel();
 }
 
 function update()
@@ -101,10 +105,11 @@ function update()
 
 }
 
-function createFood (foodGroup, x, y)
+function createFood (x, y)
 {
-    var food = foodGroup.create(x, y, 'food');
+    var food = foodies.create(x, y, 'food');
     food.setScale(food_scale);
+    food.refreshBody()
 }
 
 function collectFood (player, food)
@@ -112,9 +117,14 @@ function collectFood (player, food)
     food.disableBody(true, true);
     health += food_health_delta;
     player.setAlpha(health);
+
+    if (foodies.countActive(true) == 0)
+    {
+        startLevel();
+    }
 }
 
-function createEnemy (enemyGroup, x, y, image)
+function createEnemy (x, y, image)
 {
     var scale = 1;
     if (image == 'amoeba') {
@@ -122,15 +132,45 @@ function createEnemy (enemyGroup, x, y, image)
     } else if (image == 'nematode') {
         scale = nematode_scale;
     }
-    var enemy = enemyGroup.create(x, y, image);
+    var enemy = enemies.create(x, y, image);
     enemy.setScale(scale);
     enemy.setCollideWorldBounds(true);
     enemy.setBounce(enemyBounce);
     enemy.body.setMaxSpeed(enemyMaxSpeed);
+    enemy.refreshBody()
+}
+
+function createRandomEnemy(x, y)
+{
+    image = enemy_images[Math.floor(Math.random() * enemy_images.length)];
+    createEnemy(x, y, image);
 }
 
 function hitEnemy (player, enemy)
 {
     health -= enemy_health_delta;
     player.setAlpha(health);
+}
+
+function startLevel ()
+{
+    level += 1;
+    for (var i = Math.pow(2, level - 1); i < Math.pow(2, level); i++) {
+        createFood(0, 0);
+        if (i % 2 == 0) {
+            createRandomEnemy(0, 0);
+        }
+    }
+    foodies.children.iterate(function (child) {
+        child.enableBody(true, widthRange(), heightRange(), true, true);
+        child.setScale(child.scale * level_scale);
+        child.refreshBody()
+    });
+    enemies.children.iterate(function (child) {
+        child.enableBody(true, widthRange(), heightRange(), true, true);
+        child.setScale(child.scale * level_scale);
+        child.refreshBody()
+    })
+    player.setScale(player.scale * level_scale);
+    player.refreshBody()
 }
