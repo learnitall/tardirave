@@ -1,5 +1,5 @@
 language: node_js
-script:
+script: npm --version
 deploy:
     provider: pages
     skip_cleanup: true
