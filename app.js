@@ -30,10 +30,12 @@ var enemyVelRange = function() {
 var food_health_delta = 0.1;  // how much health player gets from food
 var enemy_health_delta = 0.1;  // how much health player loses from enemy
 
-var min_health = 0.2;
-var in_tun = false;
+var min_health = 0.2;  // player's min health
+var max_health =  1;  // player's max health
+var in_tun = false;  // whether or not player is in tun state
 var health = 0.7;  // health of the player, acts as alpha
 var level = 0;  // current level
+var score = 0;  // player score
 
 
 var config = {
@@ -71,6 +73,15 @@ function create()
     // Setup background
     this.add.rectangle(width / 2, height / 2, width, height, background_color);
 
+    // Setup text labels
+    healthText = this.add.text(
+        16, 16, '', { fontFamily: "Arial", fontSize: '24px', fill: '#00b8e6'}
+    );
+    scoreText = this.add.text(
+        16, 48, '', { fontFamily: "Arial", fontSize: '24px', fill: '#00b8e6'}
+    );
+    updateScore();
+
     // Setup player
     targetX = width / 2;
     targetY = height * (3/4);
@@ -80,6 +91,7 @@ function create()
     player.setBounce(playerBounce);
     player.setAlpha(health);
     player.body.setMaxSpeed(playerMaxSpeed);
+    updatePlayerHealth();
 
     // Setup mouse target
     target = this.physics.add.staticImage(0, 0, 'cross');
@@ -93,6 +105,7 @@ function create()
     // Setup enemies
     enemies = this.physics.add.group()
     this.physics.add.collider(player, enemies, hitEnemy, null, this);
+
 
     startLevel();
 }
@@ -112,9 +125,15 @@ function update()
         player.setAccelerationY((-player.y + targetY) * accel_factor);
 
     } else {
+        player.setAccelerationX(0);
+        player.setAccelerationY(0);
         target.disableBody(true, true);
     }
 
+}
+
+function updateScore() {
+    scoreText.setText('Score: ' + score);
 }
 
 function updatePlayerHealth() {
@@ -122,14 +141,17 @@ function updatePlayerHealth() {
     {
         health = min_health;
         in_tun = true;
+        healthText.setText('Health: (TUN)');
     } else
     {
         in_tun = false;
-        if (health > 1)
+        if (health > max_health)
         {
-            health = 1;
+            health = max_health;
         }
+        healthText.setText('Health: ' + Math.round((health / max_health) * 100) + '%');
     }
+
 
     player.setAlpha(health);
     player.refreshBody()
@@ -147,6 +169,8 @@ function collectFood (player, food)
     food.disableBody(true, true);
     health += food_health_delta;
     updatePlayerHealth()
+    score += 1;
+    updateScore()
 
     if (foodies.countActive(true) == 0)
     {
@@ -201,6 +225,7 @@ function startLevel ()
         child.setVelocity(enemyVelRange(), enemyVelRange());
         child.refreshBody()
     })
+    updatePlayerHealth();
     player.setScale(player.scale * level_scale);
     player.refreshBody()
 }
