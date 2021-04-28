@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/learnitall/tardirave/issues"
   },
-  "homepage": "https://github.com/learnitall/tardirave#readme"
+  "homepage": "https://github.com/learnitall/tardirave#readme",
+  "dependencies": {
+    "phaser": "^3.54.0"
+  }
 }
