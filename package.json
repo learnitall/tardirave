@@ -4,7 +4,7 @@
   "description": "HTML game where you play as a hungry tardigrade",
   "main": "app.js",
   "scripts": {
-    "test": "node_modules/http-server/bin/http-server -c-1"
+    "test": "node_modules/http-server/bin/http-server -c-1 -o"
   },
   "repository": {
     "type": "git",
@@ -16,9 +16,6 @@
     "url": "https://github.com/learnitall/tardirave/issues"
   },
   "homepage": "https://github.com/learnitall/tardirave#readme",
-  "dependencies": {
-    "phaser": "^3.54.0"
-  },
   "devDependencies": {
     "http-server": "^0.12.3"
   }
