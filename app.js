@@ -10,17 +10,19 @@ var heightRange = function() {return Phaser.Math.Between(0, height);}
 var background_color = "0xe6ffe6";
 
 // these below scales were determined empirically
-var tardigrade_scale = 0.5;  // scale of tardigrade image
+var tardigrade_scale = 0.4;  // scale of tardigrade image
 var cross_scale = 0.3;  // scale of cross image
-var food_scale = 0.2;  // scale of food image
-var amoeba_scale = 0.2; // scale of amoeba
-var nematode_scale = 0.2;  // scale of nematode
+var food_scale = 0.3;  // scale of food image
+var amoeba_scale = 0.4; // scale of amoeba
+var nematode_scale = 0.3;  // scale of nematode
 var water_scale = 0.1;  // scale of water image
-var level_scale = (7 / 8)  // scalar to reduce scales as level up
+var level_scale = (15 / 16)  // scalar to reduce scales as level up
 
 var accel_factor = 1.5;  // scalar on player accel
-var playerBounce = 0.7;  // bounce factor on world bounds
+var tun_bounce_factor = 2;  // change in velocity with target in tun
+var playerBounce = 1;  // bounce factor on world bounds
 var playerMaxSpeed = 200;  // max speed of player
+var playerMaxSpeedTun = playerMaxSpeed / 2;
 var enemyBounce = 1;  // bounce factor of enemy
 var enemyMaxSpeed = 100;  // max speed of enemy
 // get random velocity componet loosely based on max speed
@@ -100,6 +102,7 @@ function create()
     target = this.physics.add.staticImage(0, 0, 'cross');
     target.setScale(cross_scale);
     target.disableBody(true, true);
+    this.physics.add.overlap(player, target, bounceTun, null, this);
 
     // Setup food
     foodies = this.physics.add.group();
@@ -119,22 +122,23 @@ function create()
 
 function update()
 {
+    if (this.input.activePointer.isDown)
+    {
+        targetX = this.input.activePointer.worldX;
+        targetY = this.input.activePointer.worldY;
+        target.enableBody(true, targetX, targetY, true, true);
+    }
+
     if (!in_tun)
     {
-        if (this.input.activePointer.isDown)
-        {
-            targetX = this.input.activePointer.worldX;
-            targetY = this.input.activePointer.worldY;
-            target.enableBody(true, targetX, targetY, true, true);
-        }
-
+        player.body.setMaxSpeed(playerMaxSpeed);
         player.setAccelerationX((-player.x + targetX) * accel_factor);
         player.setAccelerationY((-player.y + targetY) * accel_factor);
 
     } else {
+        player.body.setMaxSpeed(playerMaxSpeedTun);
         player.setAccelerationX(0);
         player.setAccelerationY(0);
-        target.disableBody(true, true);
     }
 
 }
@@ -159,15 +163,27 @@ function updatePlayerHealth() {
         healthText.setText('Health: ' + Math.round((health / max_health) * 100) + '%');
     }
 
-
     player.setAlpha(health);
     player.refreshBody()
 }
 
-function createFood (x, y)
+function bounceTun (player, target)
+{
+    if (in_tun)
+    {
+        var scalarX = (player.x - target.x > 0) ? 1 : -1;
+        var scalarY = (player.y - target.y > 0) ? 1 : -1;
+        var addVelX = tun_bounce_factor * scalarX;
+        var addVelY = tun_bounce_factor * scalarY;
+        player.setVelocityX(player.body.velocity.x + addVelX);
+        player.setVelocityY(player.body.velocity.y + addVelY);
+    }
+}
+
+function createFood (x, y, level)
 {
     var food = foodies.create(x, y, 'food');
-    food.setScale(food_scale);
+    food.setScale(food_scale * Math.pow(level_scale, level));
     food.refreshBody()
 }
 
@@ -188,10 +204,10 @@ function collectFood (player, food)
     }
 }
 
-function createWater (x, y)
+function createWater (x, y, level)
 {
     var water = waterdrops.create(x, y, 'water');
-    water.setScale(water_scale);
+    water.setScale(water_scale * Math.pow(level_scale, level));
     water.refreshBody();
 }
 
@@ -204,7 +220,7 @@ function collectWater (player, water)
     updateScore();
 }
 
-function createEnemy (x, y, image)
+function createEnemy (x, y, image, level)
 {
     var scale = 1;
     if (image == 'amoeba') {
@@ -213,7 +229,7 @@ function createEnemy (x, y, image)
         scale = nematode_scale;
     }
     var enemy = enemies.create(x, y, image);
-    enemy.setScale(scale);
+    enemy.setScale(scale * Math.pow(level_scale, level));
     enemy.setCollideWorldBounds(true);
     enemy.setBounce(enemyBounce);
     enemy.body.setMaxSpeed(enemyMaxSpeed);
@@ -221,10 +237,10 @@ function createEnemy (x, y, image)
     enemy.refreshBody();
 }
 
-function createRandomEnemy(x, y)
+function createRandomEnemy(x, y, level)
 {
     image = enemy_images[Math.floor(Math.random() * enemy_images.length)];
-    createEnemy(x, y, image);
+    createEnemy(x, y, image, level);
 }
 
 function hitEnemy (player, enemy)
@@ -239,20 +255,26 @@ function hitEnemy (player, enemy)
 function startLevel ()
 {
     level += 1;
-    createFood(0, 0);
-    createWater(0, 0);
+    createFood(0, 0, level);
+
     foodies.children.iterate(function (child) {
         child.enableBody(true, widthRange(), heightRange(), true, true);
         child.setScale(child.scale * level_scale);
         child.refreshBody()
     });
+
+    createWater(0, 0, level);
     waterdrops.children.iterate(function (child) {
         child.enableBody(true, widthRange(), heightRange(), true, true);
         child.setScale(child.scale * level_scale);
         child.refreshBody()
     });
 
-    createRandomEnemy(widthRange(), heightRange());
+    createRandomEnemy(widthRange(), heightRange(), level);
+    enemies.children.iterate(function (child) {
+        child.setScale(child.scale * level_scale);
+        child.refreshBody()
+    });
 
     updatePlayerHealth();
     player.setScale(player.scale * level_scale);
