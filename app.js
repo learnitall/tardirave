@@ -19,7 +19,7 @@ var water_scale = 0.1;  // scale of water image
 var level_scale = (7 / 8)  // scalar to reduce scales as level up
 
 var accel_factor = 1.5;  // scalar on player accel
-var playerBounce = 0.5;  // bounce factor on world bounds
+var playerBounce = 0.7;  // bounce factor on world bounds
 var playerMaxSpeed = 200;  // max speed of player
 var enemyBounce = 1;  // bounce factor of enemy
 var enemyMaxSpeed = 100;  // max speed of enemy
