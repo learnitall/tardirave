@@ -9,24 +9,29 @@ var height = 600;
 var heightRange = function() {return Phaser.Math.Between(0, height);}
 var background_color = "0xe6ffe6";
 
+// these below scales were determined empirically
 var tardigrade_scale = 0.5;  // scale of tardigrade image
 var cross_scale = 0.3;  // scale of cross image
 var food_scale = 0.2;  // scale of food image
 var amoeba_scale = 0.2; // scale of amoeba
 var nematode_scale = 0.2;  // scale of nematode
-var level_scale = (3 / 4)  // scalar to reduce scales as level up
+var level_scale = (7 / 8)  // scalar to reduce scales as level up
 
 var accel_factor = 1.5;  // scalar on player accel
 var playerBounce = 0.5;  // bounce factor on world bounds
 var playerMaxSpeed = 200;  // max speed of player
-var enemyBounce = 0.2;  // bounce factor of enemy
-var enemyMaxSpeed = 50;  // max speed of enemy
+var enemyBounce = 1;  // bounce factor of enemy
+var enemyMaxSpeed = 100;  // max speed of enemy
+// get random velocity componet loosely based on max speed
+var enemyVelRange = function() {
+    return Phaser.Math.Between(-enemyMaxSpeed, enemyMaxSpeed);
+}
 
-var food_health_delta = 0.05;  // how much health player gets from food
-var enemy_health_delta = 0.01;  // how much health player loses from enemy
+var food_health_delta = 0.1;  // how much health player gets from food
+var enemy_health_delta = 0.1;  // how much health player loses from enemy
 
 var health = 0.7;  // health of the player, acts as alpha
-var level = 1;  // current level
+var level = 0;  // current level
 
 
 var config = {
@@ -105,6 +110,19 @@ function update()
 
 }
 
+function updatePlayerHealth() {
+    if (health > 1)
+    {
+        health = 1;
+    }
+    else if (health < 0)
+    {
+        health = 0;
+    }
+    player.setAlpha(health);
+    player.refreshBody()
+}
+
 function createFood (x, y)
 {
     var food = foodies.create(x, y, 'food');
@@ -116,7 +134,7 @@ function collectFood (player, food)
 {
     food.disableBody(true, true);
     health += food_health_delta;
-    player.setAlpha(health);
+    updatePlayerHealth()
 
     if (foodies.countActive(true) == 0)
     {
@@ -137,7 +155,7 @@ function createEnemy (x, y, image)
     enemy.setCollideWorldBounds(true);
     enemy.setBounce(enemyBounce);
     enemy.body.setMaxSpeed(enemyMaxSpeed);
-    enemy.refreshBody()
+    enemy.refreshBody();
 }
 
 function createRandomEnemy(x, y)
@@ -149,18 +167,14 @@ function createRandomEnemy(x, y)
 function hitEnemy (player, enemy)
 {
     health -= enemy_health_delta;
-    player.setAlpha(health);
+    updatePlayerHealth();
 }
 
 function startLevel ()
 {
     level += 1;
-    for (var i = Math.pow(2, level - 1); i < Math.pow(2, level); i++) {
-        createFood(0, 0);
-        if (i % 2 == 0) {
-            createRandomEnemy(0, 0);
-        }
-    }
+    createFood(0, 0);
+    createRandomEnemy(0, 0);
     foodies.children.iterate(function (child) {
         child.enableBody(true, widthRange(), heightRange(), true, true);
         child.setScale(child.scale * level_scale);
@@ -169,6 +183,7 @@ function startLevel ()
     enemies.children.iterate(function (child) {
         child.enableBody(true, widthRange(), heightRange(), true, true);
         child.setScale(child.scale * level_scale);
+        child.setVelocity(enemyVelRange(), enemyVelRange());
         child.refreshBody()
     })
     player.setScale(player.scale * level_scale);
