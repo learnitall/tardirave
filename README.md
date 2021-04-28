@@ -42,6 +42,6 @@ get the highest score possible.
 * [Blob (cleanpng)](https://www.cleanpng.com/png-clip-art-slime-cliparts-546678/)
 * [Tardigrade (deviantart)](https://www.deviantart.com/daieny/art/Chibi-Tardigrade-564526554)
 * [Cross (pngwing)](https://www.pngwing.com/en/free-png-ddlew/download)
-* [Water (pngfind.com)][https://www.pngfind.com/mpng/boRbJR_water-drop-cartoon-png-water-droplet-clip-art/]
+* [Water (pngfind.com)](https://www.pngfind.com/mpng/boRbJR_water-drop-cartoon-png-water-droplet-clip-art/)
 
 PNG to SVG converter: [pngtosvg.com](https://www.pngtosvg.com/)
