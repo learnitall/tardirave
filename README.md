@@ -13,22 +13,25 @@ Build with <3 and [phaser](https://phaser.io/), the game can be played at
 
 ## How To Play
 
-You play as a Tardigrade whose goal is to collect food or water, which are the
-plant and water droplets on the screen. When a resource is collected, your
-health and score will increase. Your health and score is displayed in the upper
-left corner of the screen.
+You play as Thomas the Tardigrade, living in the cool waters of a Rocky
+Mountain lake. Thomas isn't the best at gathering food, so it's your job
+to help him out. Help Thomas collect food and water, which are the
+plant and water droplets on the screen. When a resource is collected, Thomas'
+health and score will increase. Thomas' health and score is displayed in the
+upper left corner of the screen.
 
-To move, touch or click on a position in the screen. A target will appear and
-your tardigrade character will accelerate towards it.
+To move Thomas, touch or click on a position in the screen. A target will appear
+and your Thomas will accelerate towards it.
 
-To make the game more interesting, there are enemies that appear on the screen
-as well. There are the nematode and amoeba images. They will move around
-randomly. If you collide with an enemy, your health will drop.
+Be careful! There are enemies that appear on the screen as well. There are
+the nematode and amoeba images. They will move around randomly. If Thomas
+collides with an enemy, his health will drop.
 
-If your health drops too low, you'll enter a tun state. Tardigrades enter
+If Thomas' health drops too low, he'll enter a tun state. Tardigrades enter
 into a tun state when their water content drops too low; it is what allows
 them to survive extremely dry conditions for extended periods of time. In
-tun state, you are not allowed to move, and must run into a drop of water
+tun state, Thomas can't move on his own and instead must be pushed around.
+Push Thomas into a water droplet in order to revive him.
 in order to revive.
 
 If all of the food items on the screen are collected, you move onto the next
