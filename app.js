@@ -30,6 +30,8 @@ var enemyVelRange = function() {
 var food_health_delta = 0.1;  // how much health player gets from food
 var enemy_health_delta = 0.1;  // how much health player loses from enemy
 
+var min_health = 0.2;
+var in_tun = false;
 var health = 0.7;  // health of the player, acts as alpha
 var level = 0;  // current level
 
@@ -97,28 +99,38 @@ function create()
 
 function update()
 {
-
-    if (this.input.activePointer.isDown)
+    if (!in_tun)
     {
-        targetX = this.input.activePointer.worldX;
-        targetY = this.input.activePointer.worldY;
-        target.enableBody(true, targetX, targetY, true, true);
-    }
+        if (this.input.activePointer.isDown)
+        {
+            targetX = this.input.activePointer.worldX;
+            targetY = this.input.activePointer.worldY;
+            target.enableBody(true, targetX, targetY, true, true);
+        }
 
-    player.setAccelerationX((-player.x + targetX) * accel_factor);
-    player.setAccelerationY((-player.y + targetY) * accel_factor);
+        player.setAccelerationX((-player.x + targetX) * accel_factor);
+        player.setAccelerationY((-player.y + targetY) * accel_factor);
+
+    } else {
+        target.disableBody(true, true);
+    }
 
 }
 
 function updatePlayerHealth() {
-    if (health > 1)
+    if (health <= min_health)
     {
-        health = 1;
-    }
-    else if (health < 0)
+        health = min_health;
+        in_tun = true;
+    } else
     {
-        health = 0;
+        in_tun = false;
+        if (health > 1)
+        {
+            health = 1;
+        }
     }
+
     player.setAlpha(health);
     player.refreshBody()
 }
@@ -166,8 +178,11 @@ function createRandomEnemy(x, y)
 
 function hitEnemy (player, enemy)
 {
-    health -= enemy_health_delta;
-    updatePlayerHealth();
+    if (!in_tun)
+    {
+        health -= enemy_health_delta;
+        updatePlayerHealth();
+    }
 }
 
 function startLevel ()
