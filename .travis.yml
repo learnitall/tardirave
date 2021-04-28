@@ -5,7 +5,6 @@ install:
 scrpit: npm --version
 before_deploy:
     - mkdir ../deploy-dir
-    - cp -r ./node_modules ../deploy-dir
     - cp ./app.js ../deploy-dir
     - cp -r ./assets ../deploy-dir
     - cp ./LICENSE ../deploy-dir
