@@ -1,0 +1,19 @@
+{
+  "name": "tardirave",
+  "version": "1.0.0",
+  "description": "HTML game where you play as a hungry tardigrade",
+  "main": "index.js",
+  "scripts": {
+    "test": "node_modules/http-server/bin/http-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/learnitall/tardirave.git"
+  },
+  "author": "Ryan Drew",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/learnitall/tardirave/issues"
+  },
+  "homepage": "https://github.com/learnitall/tardirave#readme"
+}
