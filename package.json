@@ -4,7 +4,7 @@
   "description": "HTML game where you play as a hungry tardigrade",
   "main": "app.js",
   "scripts": {
-    "test": "node_modules/http-server/bin/http-server"
+    "test": "node_modules/http-server/bin/http-server -c-1"
   },
   "repository": {
     "type": "git",
