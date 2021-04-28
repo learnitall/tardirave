@@ -15,6 +15,7 @@ var cross_scale = 0.3;  // scale of cross image
 var food_scale = 0.2;  // scale of food image
 var amoeba_scale = 0.2; // scale of amoeba
 var nematode_scale = 0.2;  // scale of nematode
+var water_scale = 0.1;  // scale of water image
 var level_scale = (7 / 8)  // scalar to reduce scales as level up
 
 var accel_factor = 1.5;  // scalar on player accel
@@ -29,6 +30,7 @@ var enemyVelRange = function() {
 
 var food_health_delta = 0.1;  // how much health player gets from food
 var enemy_health_delta = 0.1;  // how much health player loses from enemy
+var water_health_delta = 0.1;  // how much health player gets from water
 
 var min_health = 0.2;  // player's min health
 var max_health =  1;  // player's max health
@@ -64,6 +66,7 @@ function preload()
     this.load.image('food', 'assets/leaf.svg');
     this.load.image('amoeba', 'assets/blob.svg');
     this.load.image('cross', 'assets/cross.svg');
+    this.load.image('water', 'assets/water.svg');
 
     enemy_images = ['amoeba', 'nematode'];
 }
@@ -101,6 +104,10 @@ function create()
     // Setup food
     foodies = this.physics.add.group();
     this.physics.add.overlap(player, foodies, collectFood, null, this);
+
+    // Setup water
+    waterdrops = this.physics.add.group();
+    this.physics.add.overlap(player, waterdrops, collectWater, null, this);
 
     // Setup enemies
     enemies = this.physics.add.group()
@@ -166,16 +173,35 @@ function createFood (x, y)
 
 function collectFood (player, food)
 {
-    food.disableBody(true, true);
-    health += food_health_delta;
-    updatePlayerHealth()
-    score += 1;
-    updateScore()
-
-    if (foodies.countActive(true) == 0)
+    if (!in_tun)
     {
-        startLevel();
+        food.disableBody(true, true);
+        health += food_health_delta;
+        updatePlayerHealth()
+        score += 1;
+        updateScore()
+
+        if (foodies.countActive(true) == 0)
+        {
+            startLevel();
+        }
     }
+}
+
+function createWater (x, y)
+{
+    var water = waterdrops.create(x, y, 'water');
+    water.setScale(water_scale);
+    water.refreshBody();
+}
+
+function collectWater (player, water)
+{
+    water.disableBody(true, true);
+    health += water_health_delta;
+    updatePlayerHealth();
+    score += 1;
+    updateScore();
 }
 
 function createEnemy (x, y, image)
@@ -191,6 +217,7 @@ function createEnemy (x, y, image)
     enemy.setCollideWorldBounds(true);
     enemy.setBounce(enemyBounce);
     enemy.body.setMaxSpeed(enemyMaxSpeed);
+    enemy.setVelocity(enemyVelRange(), enemyVelRange())
     enemy.refreshBody();
 }
 
@@ -213,18 +240,15 @@ function startLevel ()
 {
     level += 1;
     createFood(0, 0);
-    createRandomEnemy(0, 0);
     foodies.children.iterate(function (child) {
         child.enableBody(true, widthRange(), heightRange(), true, true);
         child.setScale(child.scale * level_scale);
         child.refreshBody()
     });
-    enemies.children.iterate(function (child) {
-        child.enableBody(true, widthRange(), heightRange(), true, true);
-        child.setScale(child.scale * level_scale);
-        child.setVelocity(enemyVelRange(), enemyVelRange());
-        child.refreshBody()
-    })
+
+    createWater(widthRange(), heightRange());
+    createRandomEnemy(widthRange(), heightRange());
+
     updatePlayerHealth();
     player.setScale(player.scale * level_scale);
     player.refreshBody()
