@@ -1,5 +1,7 @@
 # tardirave
 
+[![Build Status](https://travis-ci.com/learnitall/tardirave.svg?branch=main)](https://travis-ci.com/learnitall/tardirave)
+
 Ryan Drew, 2021
 
 ## Description
