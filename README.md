@@ -9,7 +9,7 @@ Ryan Drew, 2021
 This is a fun little project for a class of mine at CU Boulder. The goal is
 to create a web game that allows for a fun way to learn about Tardigrades.
 Build with <3 and [phaser](https://phaser.io/), the game can be played at
-[here][https://learnin.today/tardirave].
+[here](https://learnitall.github.io/tardirave/).
 
 ## How To Play
 
