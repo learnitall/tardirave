@@ -5,7 +5,7 @@ install:
 scrpit: npm --version
 deploy:
     provider: pages
-    cleanup: false
+    skip_cleanup: true
     token: $GITHUB_TOKEN
     keep_history: false
     local_dir: $TRAVIS_BUILD_DIR
