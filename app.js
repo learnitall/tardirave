@@ -240,13 +240,18 @@ function startLevel ()
 {
     level += 1;
     createFood(0, 0);
+    createWater(0, 0);
     foodies.children.iterate(function (child) {
         child.enableBody(true, widthRange(), heightRange(), true, true);
         child.setScale(child.scale * level_scale);
         child.refreshBody()
     });
+    waterdrops.children.iterate(function (child) {
+        child.enableBody(true, widthRange(), heightRange(), true, true);
+        child.setScale(child.scale * level_scale);
+        child.refreshBody()
+    });
 
-    createWater(widthRange(), heightRange());
     createRandomEnemy(widthRange(), heightRange());
 
     updatePlayerHealth();
